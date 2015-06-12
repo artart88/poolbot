@@ -1,5 +1,5 @@
 //Pool Control Program		Art Balourdas
-//POOL_09_01_2014_a
+//POOL_06_11_2015_a
 
 /* Arduino Interface to the PSC05 X10 Receiver.                       BroHogan 3/24/09
  * SETUP: X10 PSC05/TW523 RJ11 to Arduino (timing for 60Hz)
