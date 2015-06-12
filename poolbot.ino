@@ -214,11 +214,10 @@ void pump_on()
        // SX10.write(HOUSE_D,UNIT_1,2);  // 
         // send a "on" command 3 times:
         // SX10.write(HOUSE_D,ON,3);  //
-	//set pump flag P9 on
+	//set pump x10 flag P9 on
 	SX10.write(HOUSE_P,UNIT_9,2);  // 
 	SX10.write(HOUSE_P,ON,3);  // 
         Serial.println("pump x10 flag P9 on");
-*/        
 }
 
 void pump_off()
@@ -273,7 +272,7 @@ void spa_off()
        // SX10.write(HOUSE_D,OFF,3);  // Send D2 OFF      
        // set spa x10 flag D10 off
         SX10.write(HOUSE_D,UNIT_10,2);  // Send D10
-//	SX10.write(HOUSE_D,OFF,3);  // Send D10 OFF Spa Flag
+	SX10.write(HOUSE_D,OFF,3);  // Send D10 OFF Spa Flag
         Serial.println("spa x10 flag D10 off");
 
 
