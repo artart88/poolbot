@@ -9,6 +9,20 @@
  * - RJ11 pin 4 (YEL) -> Pin 13 = Arduino transmit (via X10 Lib)
  * NOTES:
  * - Must detach interrup when transmitting with X10 Lib 
+ 
+ FLAGS
+ hs_pump_flag   //flag from homeseer
+ pump_on_flag	//internal
+ spa_on_flag	//internal
+ 
+ SEND X10 FLAGS to HS
+ D9 pump on/off
+ D10 spa mode on/off
+ 
+ RECEIVE X10 from HS or X10 Contolers
+ P1 pump on/off
+ P2 spa mode on/off (valves and heater)
+ 
  */
 
 #include "Arduino.h"
@@ -98,6 +112,7 @@ void loop(){
         spa_off();
         //****pump off routine here with check flag and time delay off
         break;
+        
       case '4': //Spa ON - Valves and Heater D2 ON and Pump D1 ON
         Serial.println("case 4 - Spa ON");
         pump_on();
@@ -192,57 +207,54 @@ void loop(){
 void pump_on()
 {
         // **** on by relay
-       boolean pump_on_flag = true;
+       pump_on_flag = true;
        digitalWrite(ledpin5, HIGH); 
-       Serial.println("pump on relay:"); 	  
- /*       // **** on by x10
-        SX10.write(HOUSE_D,UNIT_1,2);  // 
+       Serial.println("pump relay on"); 	  
+       // **** on by x10
+       // SX10.write(HOUSE_D,UNIT_1,2);  // 
         // send a "on" command 3 times:
-        SX10.write(HOUSE_D,ON,3);  //
-	//set pump flags on
-	SX10.write(HOUSE_D,UNIT_9,2);  // 
-	SX10.write(HOUSE_D,ON,3);  // 
-	pump_on_flag = true;
-        Serial.println("pump on x10:");
+        // SX10.write(HOUSE_D,ON,3);  //
+	//set pump flag P9 on
+	SX10.write(HOUSE_P,UNIT_9,2);  // 
+	SX10.write(HOUSE_P,ON,3);  // 
+        Serial.println("pump x10 flag P9 on");
 */        
 }
 
 void pump_off()
 {
-        boolean pump_on_flag = false;
+        pump_on_flag = false;
         digitalWrite(ledpin5, LOW);  
-        Serial.println("pump off by relay");   // off by relay
- /*       // off by x10	  
-        SX10.write(HOUSE_D,UNIT_1,2);  // 
+        Serial.println("pump relay off");   // off by relay
+        // off by x10	  
+//        SX10.write(HOUSE_D,UNIT_1,2);  // 
         // send an "off" command 3 times:
-        SX10.write(HOUSE_D,OFF,3);  // 
-        //set pump flags off
-	SX10.write(HOUSE_D,UNIT_9,2);  // 
-	SX10.write(HOUSE_D,OFF,3);  // 
-	pump_on_flag = false;
-*/	
-        
+ //       SX10.write(HOUSE_D,OFF,3);  // 
+        //set pump flag P9 off
+	SX10.write(HOUSE_P,UNIT_9,2);  // 
+	SX10.write(HOUSE_P,OFF,3);  // 
+	Serial.println("pump x10 flag P9 off");
 }
 
 void spa_on()
 {
       // Spa Mode ON Relay
-      spa_on_flag = true;
-	  digitalWrite(ledpin6, HIGH);
-        Serial.println("spa valves on relay");
+         spa_on_flag = true;
+	 digitalWrite(ledpin6, HIGH);
+        Serial.println("spa valves relay on");
        // Heater ON Relay
           digitalWrite(ledpin22, HIGH);
-        Serial.println("heater on relay");
+        Serial.println("heater relay on");
 
       // Spa Mode ON D2 (valves and heater) x10
 	 // SX10.write(HOUSE_D,UNIT_2,2); // Send D2
         // send a "on" command 3 times:
         //  SX10.write(HOUSE_D,ON,3);   // D2 ON
         //
-        	//set pump flags on
-//	SX10.write(HOUSE_D,UNIT_10,2);  // Send D10
-//	SX10.write(HOUSE_D,ON,3);  //  Send D10 ON Spa Flag
-      //  Serial.println("spa on x10");
+        //set pump flag D10 on
+	SX10.write(HOUSE_D,UNIT_10,2);  // Send D10
+	SX10.write(HOUSE_D,ON,3);  //  Send D10 ON Spa Flag
+        Serial.println("spa x10 flag D10 on");
 }
 
 void spa_off()
@@ -255,15 +267,14 @@ void spa_off()
         digitalWrite(ledpin22, LOW);
         Serial.println("heater off relay");
         
-      // Spa Mode OFF D2 (valves and heater)
-	 // SX10.write(HOUSE_D,UNIT_2,2);  // Send D2
+        // Spa Mode OFF D2 (valves and heater)
+        // SX10.write(HOUSE_D,UNIT_2,2);  // Send D2
         // send a "off" command 3 times:
        // SX10.write(HOUSE_D,OFF,3);  // Send D2 OFF      
-        // set spa on flag off
-     //   SX10.write(HOUSE_D,UNIT_11,2);  // Send D11
-//	SX10.write(HOUSE_D,OFF,3);  // Send D11 OFF Spa Flag
-        	
-       // Serial.println("spa off x10");
+       // set spa x10 flag D10 off
+        SX10.write(HOUSE_D,UNIT_10,2);  // Send D10
+//	SX10.write(HOUSE_D,OFF,3);  // Send D10 OFF Spa Flag
+        Serial.println("spa x10 flag D10 off");
 
 
 	
