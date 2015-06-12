@@ -11,17 +11,17 @@
  * - Must detach interrup when transmitting with X10 Lib 
  
  FLAGS
- hs_pump_flag   //flag from homeseer
- pump_on_flag	//internal
- spa_on_flag	//internal
+ * hs_pump_flag   //flag from homeseer to be used to test if HS turned on the pump. if yes do not turn it off.
+ * pump_on_flag	//internal
+ * spa_on_flag	//internal
  
  SEND X10 FLAGS to HS
- D9 pump on/off
- D10 spa mode on/off
+ * D9 pump on/off
+ * D10 spa mode on/off
  
  RECEIVE X10 from HS or X10 Contolers
- P1 pump on/off
- P2 spa mode on/off (valves and heater)
+ * P1 pump on/off
+ * P2 spa mode on/off (valves and heater)
  
  */
 
@@ -66,7 +66,7 @@ Keypad keypad = Keypad( makeKeymap(keys), rowPins, colPins, ROWS, COLS );
 
 boolean pump_on_flag = false;
 boolean spa_on_flag = false;
-boolean hb_pump_flag = false;
+
 
 void setup() {
 
@@ -85,9 +85,11 @@ void setup() {
 }
 
 // main loop -----------------------
+
 void loop(){
 
-  //--------matrix button processing----------
+//--------matrix button processing----------
+ 
   char key = keypad.getKey();
   Serial.println("get key");
   if(key)  // same as if(key != NO_KEY)
@@ -101,26 +103,28 @@ void loop(){
         Serial.println("case 1 - Pump OFF");
         pump_off();
         break;
+        
       case '2':  //Pump ON 
         Serial.println("case 2 - Pump ON");
         pump_on();
         break;
 
 //SPA MODE
-      case '3': //Spa and Heater D2 OFF and Pump D1 OFF 
+      case '3': //Spa Mode OFF - valves and heater off
         Serial.println("case 3 - Spa OFF"); 
         spa_off();
-        //****pump off routine here with check flag and time delay off
+        //****pump off routine here with check flag and time delay off*****
         break;
         
-      case '4': //Spa ON - Valves and Heater D2 ON and Pump D1 ON
+      case '4': //Spa Mode ON - valves, heater and pump on
         Serial.println("case 4 - Spa ON");
         pump_on();
         spa_on();
         break;
 
-/*      case '5': // Relay 3 Off for future use
-	digitalWrite(ledpin7, LOW);
+/*      
+      case '5': // Relay 3 Off for future use
+      digitalWrite(ledpin7, LOW);
 
       case '6': // Relay 3 on for future use
 	digitalWrite(ledpin7, HIGH);
@@ -136,15 +140,15 @@ void loop(){
 
       case '10': // Relay 5 on for future use
 	digitalWrite(ledpin9, HIGH);
-
 */
       default:
         Serial.println(key);
     }
   }
  
- 
- //-----X10 received input processing--------------
+ //--------------------------------------------------------------------
+ //        X10 received input processing
+ //--------------------------------------------------------------------
 
 //   Serial.println("aaaa");
    if (SX10.received()) {                        
@@ -152,21 +156,23 @@ void loop(){
  	SX10.debug();                       // print out the received command
 	SX10.reset();
 
-//if P3 was received then set the HB pump flag to TRUE
-     if (SX10.unitCode() == 3)
+/*
+//USE THIS CODE IF HS IS TURNING THE PUMP ON AND OFF INSTEAD OF THE PUMP'S BUILT-IN TIMER
+//if P11 was received then set the HB pump flag to TRUE
+     if (SX10.unitCode() == 11)
 {
       if (SX10.houseCode() == 'P')
-//  Serial.println("received P3 (pump on notification) from HB");
+//  Serial.println("received P11 (pump on notification) from HS");
     {  
 	hb_pump_flag = true;
-	
-	//*****need to add pump flag off notification 
+*/
 
-//if P1 is received then turn pump on or off 
+//-----if P1 is received then turn pump on or off----- 
+
      if (SX10.unitCode() == 1);
 {      
        if (SX10.houseCode() == 'P');
- {
+      {
         delay(300);
         byte cmndCode = SX10.cmndCode();
         if(cmndCode == ON) pump_on() ; 
@@ -176,10 +182,11 @@ void loop(){
       SX10.reset();
 //      SX10.write(HOUSE_M,UNIT_6,RPT_SEND);
 //      SX10.write(HOUSE_M,ON,RPT_SEND);  
-		}  
-   }
+       }  
+ }
 
-//if P2 is received then turn spa mode on or off 
+//-----if P2 is received then turn spa mode on or off-----
+
      if (SX10.unitCode() == 2);
 {      
        if (SX10.houseCode() == 'P');
@@ -214,10 +221,11 @@ void pump_on()
        // SX10.write(HOUSE_D,UNIT_1,2);  // 
         // send a "on" command 3 times:
         // SX10.write(HOUSE_D,ON,3);  //
-	//set pump x10 flag P9 on
+	//set pump flag P9 on
 	SX10.write(HOUSE_P,UNIT_9,2);  // 
 	SX10.write(HOUSE_P,ON,3);  // 
         Serial.println("pump x10 flag P9 on");
+*/        
 }
 
 void pump_off()
