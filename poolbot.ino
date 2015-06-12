@@ -225,7 +225,6 @@ void pump_on()
 	SX10.write(HOUSE_P,UNIT_9,2);  // 
 	SX10.write(HOUSE_P,ON,3);  // 
         Serial.println("pump x10 flag P9 on");
-*/        
 }
 
 void pump_off()
