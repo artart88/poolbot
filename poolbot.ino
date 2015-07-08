@@ -1,5 +1,5 @@
 //Pool Control Program		Art Balourdas
-//POOL_06_11_2015_a
+//POOL_07_07_2015_a
 
 /* Arduino Interface to the PSC05 X10 Receiver.                       BroHogan 3/24/09
  * SETUP: X10 PSC05/TW523 RJ11 to Arduino (timing for 60Hz)
@@ -10,14 +10,13 @@
  * NOTES:
  * - Must detach interrup when transmitting with X10 Lib 
  
- FLAGS
- * hs_pump_flag   //flag from homeseer to be used to test if HS turned on the pump. if yes do not turn it off.
+ FLAGS (Internal)
  * pump_on_flag	//internal
  * spa_on_flag	//internal
  
  SEND X10 FLAGS to HS
- * D9 pump on/off
- * D10 spa mode on/off
+ * P9 pump on/off
+ * P10 spa mode on/off
  
  RECEIVE X10 from HS or X10 Contolers
  * P1 pump on/off
@@ -83,13 +82,16 @@ void setup() {
   delay(500);
   Serial.print("POOL controler test");
 }
-
+//#################################
 // main loop -----------------------
+//#################################
 
 void loop(){
 
+//-------------------------------------------
 //--------matrix button processing----------
- 
+//-----------------------------------------------------
+
   char key = keypad.getKey();
   Serial.println("get key");
   if(key)  // same as if(key != NO_KEY)
@@ -119,6 +121,7 @@ void loop(){
       case '4': //Spa Mode ON - valves, heater and pump on
         Serial.println("case 4 - Spa ON");
         pump_on();
+        //****add delay here to allow pump to start before moving valves
         spa_on();
         break;
 
@@ -156,24 +159,13 @@ void loop(){
  	SX10.debug();                       // print out the received command
 	SX10.reset();
 
-/*
-//USE THIS CODE IF HS IS TURNING THE PUMP ON AND OFF INSTEAD OF THE PUMP'S BUILT-IN TIMER
-//if P11 was received then set the HB pump flag to TRUE
-     if (SX10.unitCode() == 11)
-{
-      if (SX10.houseCode() == 'P')
-//  Serial.println("received P11 (pump on notification) from HS");
-    {  
-	hb_pump_flag = true;
-*/
-
 //-----if P1 is received then turn pump on or off----- 
 
      if (SX10.unitCode() == 1);
 {      
        if (SX10.houseCode() == 'P');
       {
-        delay(300);
+        delay(300);	//*****what is this for?
         byte cmndCode = SX10.cmndCode();
         if(cmndCode == ON) pump_on() ; 
         if(cmndCode == OFF) pump_off() ;      
@@ -215,12 +207,12 @@ void pump_on()
 {
         // **** on by relay
        pump_on_flag = true;
-       digitalWrite(ledpin5, HIGH); 
-       Serial.println("pump relay on"); 	  
+       //digitalWrite(ledpin5, HIGH); 
+       //Serial.println("pump relay on"); 	  
        // **** on by x10
-       // SX10.write(HOUSE_D,UNIT_1,2);  // 
+        SX10.write(HOUSE_D,UNIT_1,2);  // 
         // send a "on" command 3 times:
-        // SX10.write(HOUSE_D,ON,3);  //
+        SX10.write(HOUSE_D,ON,3);  //
 	//set pump flag P9 on
 	SX10.write(HOUSE_P,UNIT_9,2);  // 
 	SX10.write(HOUSE_P,ON,3);  // 
@@ -230,12 +222,12 @@ void pump_on()
 void pump_off()
 {
         pump_on_flag = false;
-        digitalWrite(ledpin5, LOW);  
-        Serial.println("pump relay off");   // off by relay
+        //digitalWrite(ledpin5, LOW);  
+        //Serial.println("pump relay off");   // off by relay
         // off by x10	  
-//        SX10.write(HOUSE_D,UNIT_1,2);  // 
+        SX10.write(HOUSE_D,UNIT_1,2);  // 
         // send an "off" command 3 times:
- //       SX10.write(HOUSE_D,OFF,3);  // 
+        SX10.write(HOUSE_D,OFF,3);  // 
         //set pump flag P9 off
 	SX10.write(HOUSE_P,UNIT_9,2);  // 
 	SX10.write(HOUSE_P,OFF,3);  // 
